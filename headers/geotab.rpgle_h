@@ -1,0 +1,56 @@
+**FREE
+
+Dcl-Pr Geotab_Auth Pointer ExtProc;
+  pDatabase Pointer Value Options(*String);
+  pUsername Pointer Value Options(*String);
+  pPassword Pointer Value Options(*String);
+End-Pr;
+
+Dcl-Pr Geotab_Get Pointer ExtProc;
+  pSession Pointer;
+  pType    Pointer Value Options(*String);
+  pLimit   Int(5) Const Options(*NoPass);
+  pSearch  Pointer Options(*NoPass);
+End-Pr;
+
+Dcl-Pr Geotab_GetFeed Pointer ExtProc;
+  pSession     Pointer;
+  pType        Pointer Value Options(*String);
+  pLimit       Int(5) Const Options(*NoPass);
+  pFromVersion Pointer Value Options(*String:*NoPass);
+  pSearch      Pointer Options(*NoPass);
+End-Pr;
+
+Dcl-Pr Geotab_NewObject Pointer ExtProc;
+End-Pr;
+
+Dcl-Pr Geotab_SetStr ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+  pValue    Pointer Value Options(*String);
+End-Pr;
+
+Dcl-Pr Geotab_SetNum ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+  pValue    Packed(30:15) Const;
+End-Pr;
+
+Dcl-Pr Geotab_GetCount Int(5) ExtProc;
+  pGetResult Pointer;
+End-Pr;
+
+Dcl-Pr Geotab_ElementAt Pointer ExtProc;
+  pArray Pointer;
+  pIndex Int(5) Const;
+End-Pr;
+
+Dcl-Pr Geotab_StringAt Varchar(128) ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+End-Pr;
+
+Dcl-Pr Geotab_NumberAt Packed(30:15) ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+End-Pr;
