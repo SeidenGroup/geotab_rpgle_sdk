@@ -6,6 +6,10 @@ Dcl-Pr Geotab_Auth Pointer ExtProc;
   pPassword Pointer Value Options(*String);
 End-Pr;
 
+Dcl-Pr Geotab_Close ExtProc;
+  pJSON Pointer;
+End-Pr;
+
 Dcl-Pr Geotab_Get Pointer ExtProc;
   pSession Pointer;
   pType    Pointer Value Options(*String);

@@ -82,6 +82,16 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_Close Export;
+  Dcl-Pi Geotab_Close;
+    pJSON Pointer;
+  End-Pi;
+
+  JSON_Close(pJSON);
+End-Proc;
+
+//**************************************
+
 Dcl-Proc Geotab_Get Export;
   Dcl-Pi Geotab_Get Pointer;
     pSession Pointer;

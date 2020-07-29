@@ -7,8 +7,11 @@ Ctl-Opt DFTACTGRP(*No) BNDDIR('GEOTAB');
 Dcl-S authinfo Pointer;
 Dcl-s data Pointer;
 dcl-s search pointer;
+dcl-s currentElement pointer;
 
 Dcl-S toVersion Varchar(32);
+Dcl-S currentRule Varchar(32);
+dcl-s driverID varchar(20);
 
 dcl-s index    int(5);
 dcl-s length   int(5);
@@ -33,7 +36,6 @@ Geotab_SetStr(search:'fromDate':%char(date:*iso));
 //We keep calling GetFeed until we have no more data to fetch.
 Dow (length > 0);
   Geotab_Close(data);
-  
   data = Geotab_GetFeed(authinfo:'ExceptionEvent':500:toVersion:search);
   //We store the next version to go from so we can stream the results
   toVersion = Geotab_StringAt(data:'result.toVersion');
@@ -42,8 +44,19 @@ Dow (length > 0);
   length = Geotab_GetCount(data);
 
   If (length > 0);
+
     Dsply ('Count: ' + %char(length) + '-' + %trimr(toVersion));
     //Handle array of data here
+    For index = 0 to length-1;
+      currentElement = Geotab_ElementAt(data:index);
+      currentRule = Geotab_StringAt(currentElement:'rule.id');
+
+      if (currentRule = 'auCTYUcfKx02zLHcsxaBTXA');
+        driverID = Geotab_StringAt(currentElement:'driver.id');
+        Dsply ('Driver ' + %TrimR(driverID) + ' broke the rule.');
+      Endif;
+    Endfor;
+
   Else;
     Geotab_Close(data);
     Leave;
