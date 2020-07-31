@@ -35,6 +35,26 @@ End-Pr;
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;
 
+Dcl-Pr Geotab_NewArray Pointer ExtProc;
+End-Pr;
+
+Dcl-Pr Geotab_SetArray ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+  pArray    Pointer;
+End-Pr;
+
+Dcl-Pr Geotab_SetObject ExtProc;
+  pObject    Pointer;
+  pProperty  Pointer Value Options(*String);
+  pNewObject Pointer;
+End-Pr;
+
+Dcl-Pr Geotab_ArrayPush ExtProc;
+  pArray Pointer;
+  pValue Pointer;
+End-Pr;
+
 Dcl-Pr Geotab_SetStr ExtProc;
   pObject   Pointer;
   pProperty Pointer Value Options(*String);

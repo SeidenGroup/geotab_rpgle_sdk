@@ -192,24 +192,28 @@ Dcl-Proc Geotab_GetRoadMaxSpeeds Export;
   Dcl-S json Pointer;
   Dcl-S string varchar(24);
 
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'GetRoadMaxSpeeds');
+
   If (%Parms >= 2);
     string = %Str(pDeviceID);
     If (string <> *BLANK);
-      JSON_SetStr(json:'deviceSearch.id':string);
+      JSON_SetStr(json:'params.deviceSearch.id':string);
     Endif;
   Endif;
 
   If (%Parms >= 3);
     string = %Str(pFromDate);
     If (string <> *BLANK);
-      JSON_SetStr(json:'fromDate':string);
+      JSON_SetStr(json:'params.fromDate':string);
     Endif;
   Endif;
 
   If (%Parms >= 4);
     string = %Str(pToDate);
     If (string <> *BLANK);
-      JSON_SetStr(json:'toDate':string);
+      JSON_SetStr(json:'params.toDate':string);
     Endif;
   Endif;
   
@@ -224,6 +228,25 @@ Dcl-Proc Geotab_NewObject Export;
   Dcl-Pi Geotab_NewObject Pointer End-Pi;
 
   Return JSON_NewObject();
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_NewArray Export;
+  Dcl-Pi Geotab_NewArray Pointer End-Pi;
+
+  Return JSON_NewArray();
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_ArrayPush Export;
+  Dcl-Pi Geotab_ArrayPush;
+    pArray Pointer;
+    pValue Pointer;
+  End-Pi;
+
+  JSON_ArrayPush(pArray:pValue);
 End-Proc;
 
 //**************************************
@@ -248,6 +271,30 @@ Dcl-Proc Geotab_SetNum Export;
   End-Pi;
 
   JSON_SetNum(pObject:pProperty:pValue);
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_SetArray Export;
+  Dcl-Pi Geotab_SetArray;
+    pObject   Pointer;
+    pProperty Pointer Value Options(*String);
+    pArray    Pointer;
+  End-Pi;
+
+  JSON_SetValue(pObject:pProperty:pArray:JSON_ARRAY);
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_SetObject Export;
+  Dcl-Pi Geotab_SetObject;
+    pObject    Pointer;
+    pProperty  Pointer Value Options(*String);
+    pNewObject Pointer;
+  End-Pi;
+
+  JSON_SetValue(pObject:pProperty:pObject:JSON_OBJECT);
 End-Proc;
 
 //**************************************
