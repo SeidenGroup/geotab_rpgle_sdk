@@ -7,6 +7,7 @@ ctl-opt debug(*yes);
 //**************************************
 
 /include ./headers/JSONPARSER.rpgle
+/include ./headers/geotab.rpgle_h
 
 //**************************************
 
@@ -176,6 +177,45 @@ Dcl-Proc Geotab_GetFeed Export;
   Endif;
 
   Return json;
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_GetRoadMaxSpeeds Export;
+  Dcl-Pi Geotab_GetRoadMaxSpeeds Pointer;
+    pSession  Pointer;
+    pDeviceID Pointer Value Options(*String:*NoPass);
+    pFromDate Pointer Value Options(*String:*NoPass);
+    pToDate   Pointer Value Options(*String:*NoPass);
+  End-Pi;
+
+  Dcl-S json Pointer;
+  Dcl-S string varchar(24);
+
+  If (%Parms >= 2);
+    string = %Str(pDeviceID);
+    If (string <> *BLANK);
+      JSON_SetStr(json:'deviceSearch.id':string);
+    Endif;
+  Endif;
+
+  If (%Parms >= 3);
+    string = %Str(pFromDate);
+    If (string <> *BLANK);
+      JSON_SetStr(json:'fromDate':string);
+    Endif;
+  Endif;
+
+  If (%Parms >= 4);
+    string = %Str(pToDate);
+    If (string <> *BLANK);
+      JSON_SetStr(json:'toDate':string);
+    Endif;
+  Endif;
+  
+  json = Geotab_Call(json:pSession);
+
+  return json;
 End-Proc;
 
 //**************************************

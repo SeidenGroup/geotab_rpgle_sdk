@@ -25,6 +25,13 @@ Dcl-Pr Geotab_GetFeed Pointer ExtProc;
   pSearch      Pointer Options(*NoPass);
 End-Pr;
 
+Dcl-Pr Geotab_GetRoadMaxSpeeds Pointer ExtProc;
+  pSession  Pointer;
+  pDeviceID Pointer Value Options(*String:*NoPass);
+  pFromDate Pointer Value Options(*String:*NoPass);
+  pToDate   Pointer Value Options(*String:*NoPass);
+End-Pr;
+
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;
 
