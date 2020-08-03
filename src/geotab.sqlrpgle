@@ -224,6 +224,40 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_GetAddresses Export;
+  Dcl-Pi Geotab_GetAddresses Pointer;
+    pSession         Pointer;
+    pCoordinates     Pointer Value;
+    pHosAddresses    Ind Const Options(*NoPass);
+    pMovingAddresses Ind Const Options(*NoPass);
+  End-Pi;
+
+  Dcl-S json Pointer;
+  Dcl-S HosAddresses Ind Inz(*Off);
+  Dcl-S MovingAddresses Ind Inz(*Off);
+
+  If (%Parms >= 3); 
+    HosAddresses = pHosAddresses;
+  Endif;
+
+  If (%Parms >= 4); 
+    MovingAddresses = pMovingAddresses;
+  Endif;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'GetAddresses');
+  JSON_SetValue(json:'params.coordinates':pCoordinates:JSON_ARRAY);
+  JSON_SetBool(json:'params.hosAddresses':HosAddresses);
+  JSON_SetBool(json:'params.movingAddresses':MovingAddresses);
+
+  json = Geotab_Call(json:pSession);
+
+  return json;
+End-Proc;
+
+//**************************************
+
 Dcl-Proc Geotab_NewObject Export;
   Dcl-Pi Geotab_NewObject Pointer End-Pi;
 
@@ -271,6 +305,18 @@ Dcl-Proc Geotab_SetNum Export;
   End-Pi;
 
   JSON_SetNum(pObject:pProperty:pValue);
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_SetBool Export;
+  Dcl-Pi Geotab_SetBool;
+    pObject   Pointer;
+    pProperty Pointer Value Options(*String);
+    pValue    Ind Const;
+  End-Pi;
+
+  JSON_SetBool(pObject:pProperty:pValue);
 End-Proc;
 
 //**************************************

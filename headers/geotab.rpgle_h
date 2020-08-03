@@ -32,6 +32,13 @@ Dcl-Pr Geotab_GetRoadMaxSpeeds Pointer ExtProc;
   pToDate   Pointer Value Options(*String:*NoPass);
 End-Pr;
 
+Dcl-Pr Geotab_GetAddresses Pointer ExtProc;
+  pSession         Pointer;
+  pCoordinates     Pointer Value;
+  pHosAddresses    Ind Const Options(*NoPass);
+  pMovingAddresses Ind Const Options(*NoPass);
+End-Pr;
+
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;
 
@@ -65,6 +72,12 @@ Dcl-Pr Geotab_SetNum ExtProc;
   pObject   Pointer;
   pProperty Pointer Value Options(*String);
   pValue    Packed(30:15) Const;
+End-Pr;
+
+Dcl-Pr Geotab_SetBool ExtProc;
+  pObject   Pointer;
+  pProperty Pointer Value Options(*String);
+  pValue    Ind Const;
 End-Pr;
 
 Dcl-Pr Geotab_GetCount Int(5) ExtProc;
