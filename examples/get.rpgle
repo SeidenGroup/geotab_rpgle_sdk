@@ -3,16 +3,31 @@ Ctl-Opt DFTACTGRP(*No) BNDDIR('GEOTAB');
 
 /copy ./headers/geotab.rpgle_h
 
-Dcl-S authinfo Pointer;
+dcl-pr getenv pointer extproc('getenv');
+  *n pointer value options(*string:*trim)  ;
+end-pr;
+
+dcl-pr putenv int(10) extproc('putenv');
+  *n pointer value options(*string:*trim) ;
+end-pr;
+
+Dcl-S authinfo Like(Geotab_Token);
 Dcl-s data Pointer;
 dcl-s currentElement pointer;
 
 Dcl-S someValue Varchar(52);
 
+dcl-s authpointer pointer;
 dcl-s index    int(5);
 dcl-s length   int(5);
 
-authinfo = Geotab_Auth('':'':'');
+authpointer = getenv('GEOTAB_TOKEN');
+If (authpointer <> *NULL);
+  authinfo = %Str(authpointer);
+Else;
+  authinfo = Geotab_Auth('':'':'');
+  putenv('GEOTAB_TOKEN=' + %TrimR(authinfo));
+Endif;
 
 data = Geotab_Get(authinfo:'Rule');
 
