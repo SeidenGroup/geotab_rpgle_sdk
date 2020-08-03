@@ -14,7 +14,7 @@ ctl-opt debug(*yes);
 Dcl-Proc Geotab_Call;
   Dcl-Pi Geotab_Call Pointer;
     pBody Pointer;
-    pAuth Pointer Options(*NoPass);
+    pToken Like(Geotab_Token) Options(*NoPass);
   End-Pi;
 
   Dcl-Ds request Qualified;
@@ -23,15 +23,17 @@ Dcl-Proc Geotab_Call;
     Body   Varchar(1024);
   End-Ds;
 
+  Dcl-S AuthJSON Pointer;
   Dcl-S Response SQLTYPE(CLOB:262144);
 
   If (%Parms >= 2);
+    AuthJSON = JSON_ParseString(pToken);
     request.URL = 'https://'
-                + JSON_GetStr(pAuth:'result.path')
+                + JSON_GetStr(AuthJSON:'result.path')
                 + '/apiv1/';
     JSON_SetValue(pBody
                  :'params.credentials'
-                 :JSON_Locate(pAuth:'result.credentials')
+                 :JSON_Locate(AuthJSON:'result.credentials')
                  :JSON_OBJECT);
   Else;
     request.URL = 'https://my.geotab.com/apiv1';
@@ -61,13 +63,14 @@ End-Proc;
 //**************************************
 
 Dcl-Proc Geotab_Auth Export;
-  Dcl-Pi Geotab_Auth Pointer;
+  Dcl-Pi Geotab_Auth Like(Geotab_Token);
     pDatabase Pointer Value Options(*String);
     pUsername Pointer Value Options(*String);
     pPassword Pointer Value Options(*String);
   End-Pi;
 
   Dcl-S json Pointer;
+  Dcl-S authData Like(Geotab_Token);
 
   json = JSON_NewObject();
 
@@ -77,8 +80,11 @@ Dcl-Proc Geotab_Auth Export;
   JSON_SetStr(json:'params.password':pPassword);
 
   json = Geotab_Call(json);
+  authData = JSON_AsText(json);
 
-  Return json;
+  JSON_Close(json);
+
+  Return authData;
 End-Proc;
 
 //**************************************
@@ -95,7 +101,7 @@ End-Proc;
 
 Dcl-Proc Geotab_Get Export;
   Dcl-Pi Geotab_Get Pointer;
-    pSession Pointer;
+    pSession Like(Geotab_Token);
     pType    Pointer Value Options(*String);
     pLimit   Int(5) Const Options(*NoPass);
     pSearch  Pointer Options(*NoPass);
@@ -130,7 +136,7 @@ End-Proc;
 
 Dcl-Proc Geotab_GetFeed Export;
   Dcl-Pi Geotab_GetFeed Pointer;
-    pSession     Pointer;
+    pSession     Like(Geotab_Token);
     pType        Pointer Value Options(*String);
     pLimit       Int(5) Const Options(*NoPass);
     pFromVersion Pointer Value Options(*String:*NoPass);
@@ -183,7 +189,7 @@ End-Proc;
 
 Dcl-Proc Geotab_GetRoadMaxSpeeds Export;
   Dcl-Pi Geotab_GetRoadMaxSpeeds Pointer;
-    pSession  Pointer;
+    pSession  Like(Geotab_Token);
     pDeviceID Pointer Value Options(*String:*NoPass);
     pFromDate Pointer Value Options(*String:*NoPass);
     pToDate   Pointer Value Options(*String:*NoPass);
@@ -226,7 +232,7 @@ End-Proc;
 
 Dcl-Proc Geotab_GetAddresses Export;
   Dcl-Pi Geotab_GetAddresses Pointer;
-    pSession         Pointer;
+    pSession         Like(Geotab_Token);
     pCoordinates     Pointer Value;
     pHosAddresses    Ind Const Options(*NoPass);
     pMovingAddresses Ind Const Options(*NoPass);
@@ -260,7 +266,7 @@ End-Proc;
 
 Dcl-Proc Geotab_Add Export;
   Dcl-Pi Geotab_Add;
-    pSession          Pointer;
+    pSession          Like(Geotab_Token);
     pEntityType       Pointer Value Options(*String);
     pEntityProperties Pointer;
   End-Pi;
@@ -270,6 +276,27 @@ Dcl-Proc Geotab_Add Export;
   json = JSON_NewObject();
 
   JSON_SetStr(json:'method':'Add');
+  JSON_SetStr(json:'params.typeName':pEntityType);
+  JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
+
+  json = Geotab_Call(json:pSession);
+
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_Update Export;
+  Dcl-Pi Geotab_Update;
+    pSession          Like(Geotab_Token);
+    pEntityType       Pointer Value Options(*String);
+    pEntityProperties Pointer;
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'Set');
   JSON_SetStr(json:'params.typeName':pEntityType);
   JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
 

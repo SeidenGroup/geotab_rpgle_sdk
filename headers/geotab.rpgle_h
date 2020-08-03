@@ -1,6 +1,8 @@
 **FREE
 
-Dcl-Pr Geotab_Auth Pointer ExtProc;
+Dcl-S Geotab_Token Varchar(256) Template;
+
+Dcl-Pr Geotab_Auth Like(Geotab_Token) ExtProc;
   pDatabase Pointer Value Options(*String);
   pUsername Pointer Value Options(*String);
   pPassword Pointer Value Options(*String);
@@ -11,14 +13,14 @@ Dcl-Pr Geotab_Close ExtProc;
 End-Pr;
 
 Dcl-Pr Geotab_Get Pointer ExtProc;
-  pSession Pointer;
+  pSession Like(Geotab_Token);
   pType    Pointer Value Options(*String);
   pLimit   Int(5) Const Options(*NoPass);
   pSearch  Pointer Options(*NoPass);
 End-Pr;
 
 Dcl-Pr Geotab_GetFeed Pointer ExtProc;
-  pSession     Pointer;
+  pSession     Like(Geotab_Token);
   pType        Pointer Value Options(*String);
   pLimit       Int(5) Const Options(*NoPass);
   pFromVersion Pointer Value Options(*String:*NoPass);
@@ -26,21 +28,27 @@ Dcl-Pr Geotab_GetFeed Pointer ExtProc;
 End-Pr;
 
 Dcl-Pr Geotab_GetRoadMaxSpeeds Pointer ExtProc;
-  pSession  Pointer;
+  pSession  Like(Geotab_Token);
   pDeviceID Pointer Value Options(*String:*NoPass);
   pFromDate Pointer Value Options(*String:*NoPass);
   pToDate   Pointer Value Options(*String:*NoPass);
 End-Pr;
 
 Dcl-Pr Geotab_GetAddresses Pointer ExtProc;
-  pSession         Pointer;
+  pSession         Like(Geotab_Token);
   pCoordinates     Pointer Value;
   pHosAddresses    Ind Const Options(*NoPass);
   pMovingAddresses Ind Const Options(*NoPass);
 End-Pr;
 
 Dcl-Pr Geotab_Add ExtProc;
-  pSession          Pointer;
+  pSession          Like(Geotab_Token);
+  pEntityType       Pointer Value Options(*String);
+  pEntityProperties Pointer;
+End-Pr;
+
+Dcl-Pr Geotab_Update ExtProc;
+  pSession          Like(Geotab_Token);
   pEntityType       Pointer Value Options(*String);
   pEntityProperties Pointer;
 End-Pr;
