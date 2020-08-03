@@ -7,6 +7,10 @@ Currently supported Geotab APIs:
 * Auth
 * Get
 * GetFeed
+* GetRoadMaxSpeeds
+* GetAddresses
+* Add
+* Set
 
 Please see the examples.
 
