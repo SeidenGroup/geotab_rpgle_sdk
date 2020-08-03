@@ -2,6 +2,10 @@
 
 Dcl-S Geotab_Token Varchar(256) Template;
 
+Dcl-Pr Geotab_Successful Ind ExtProc;
+  pResult Pointer Options(*NoPass);
+End-Pr;
+
 Dcl-Pr Geotab_Auth Like(Geotab_Token) ExtProc;
   pDatabase Pointer Value Options(*String);
   pUsername Pointer Value Options(*String);

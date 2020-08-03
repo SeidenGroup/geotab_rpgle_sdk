@@ -31,14 +31,22 @@ Endif;
 
 data = Geotab_Get(authinfo:'Rule');
 
-length = Geotab_GetCount(data);
+If (Geotab_Successful(data));
 
-For index = 1 to length;
-  currentElement = Geotab_ElementAt(data:index-1);
-  someValue = Geotab_StringAt(currentElement:'baseType');
+  length = Geotab_GetCount(data);
 
-  Dsply someValue;
-endfor;
+  For index = 1 to length;
+    currentElement = Geotab_ElementAt(data:index-1);
+    someValue = Geotab_StringAt(currentElement:'baseType');
+
+    Dsply someValue;
+  endfor;
+
+Else;
+
+  Dsply 'It went horribly wrong';
+
+Endif;
 
 Geotab_Close(data);
 

@@ -62,6 +62,30 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_Successful Export;
+  Dcl-Pi Geotab_Successful Ind;
+    pResult Pointer Options(*NoPass);
+  End-Pi;
+
+  If (sqlstate <> '00000');
+    Return *Off;
+  Endif;
+
+  If (%Parms >= 1);
+    If (JSON_Error(pResult));
+      Return *Off;
+    Endif;
+
+    If (JSON_Has(pResult:'error'));
+      Return *Off;
+    Endif;
+  Endif;
+
+  Return *On;
+End-Proc;
+
+//**************************************
+
 Dcl-Proc Geotab_Auth Export;
   Dcl-Pi Geotab_Auth Like(Geotab_Token);
     pDatabase Pointer Value Options(*String);
