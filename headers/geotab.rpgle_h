@@ -39,6 +39,12 @@ Dcl-Pr Geotab_GetAddresses Pointer ExtProc;
   pMovingAddresses Ind Const Options(*NoPass);
 End-Pr;
 
+Dcl-Pr Geotab_Add ExtProc;
+  pSession          Pointer;
+  pEntityType       Pointer Value Options(*String);
+  pEntityProperties Pointer;
+End-Pr;
+
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;
 
@@ -60,6 +66,11 @@ End-Pr;
 Dcl-Pr Geotab_ArrayPush ExtProc;
   pArray Pointer;
   pValue Pointer;
+End-Pr;
+
+Dcl-Pr Geotab_ArrayPushString ExtProc;
+  pArray Pointer;
+  pValue Pointer Value Options(*String);
 End-Pr;
 
 Dcl-Pr Geotab_SetStr ExtProc;

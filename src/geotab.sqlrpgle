@@ -1,5 +1,5 @@
 **FREE
-//compile:CRTSQLRPGI_MOD
+//compile :CRTSQLRPGI_MOD
 
 ctl-opt nomain;
 ctl-opt debug(*yes);
@@ -258,6 +258,27 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_Add Export;
+  Dcl-Pi Geotab_Add;
+    pSession          Pointer;
+    pEntityType       Pointer Value Options(*String);
+    pEntityProperties Pointer;
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'Add');
+  JSON_SetStr(json:'params.typeName':pEntityType);
+  JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
+
+  json = Geotab_Call(json:pSession);
+
+End-Proc;
+
+//**************************************
+
 Dcl-Proc Geotab_NewObject Export;
   Dcl-Pi Geotab_NewObject Pointer End-Pi;
 
@@ -278,6 +299,17 @@ Dcl-Proc Geotab_ArrayPush Export;
   Dcl-Pi Geotab_ArrayPush;
     pArray Pointer;
     pValue Pointer;
+  End-Pi;
+
+  JSON_ArrayPush(pArray:pValue);
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_ArrayPushString Export;
+  Dcl-Pi Geotab_ArrayPushString;
+    pArray Pointer;
+    pValue Pointer Value Options(*String);
   End-Pi;
 
   JSON_ArrayPush(pArray:pValue);
@@ -340,7 +372,7 @@ Dcl-Proc Geotab_SetObject Export;
     pNewObject Pointer;
   End-Pi;
 
-  JSON_SetValue(pObject:pProperty:pObject:JSON_OBJECT);
+  JSON_SetValue(pObject:pProperty:pNewObject:JSON_OBJECT);
 End-Proc;
 
 //**************************************
