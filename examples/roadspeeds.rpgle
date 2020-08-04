@@ -3,7 +3,7 @@ Ctl-Opt DFTACTGRP(*No) BNDDIR('GEOTAB');
 
 /copy ./headers/geotab.rpgle_h
 
-Dcl-S authinfo Pointer;
+Dcl-S authinfo Like(Geotab_Token);
 Dcl-s data Pointer;
 dcl-s currentElement pointer;
 
