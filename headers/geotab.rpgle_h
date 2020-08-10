@@ -4,6 +4,13 @@
 Dcl-S Geotab_Token Varchar(256) Template;
 
 //@ Used to determine if a call to the API was successful
+//- authinfo = Geotab_Auth('':'':'');
+//- data = Geotab_Get(authinfo:'Rule');
+//-
+//- If (Geotab_Successful(data));
+//-   ...
+//- Endif;
+
 Dcl-Pr Geotab_Successful Ind ExtProc;
   //@ Optionally the resulting JSON object
   pResult Pointer Options(*NoPass);
@@ -25,6 +32,8 @@ Dcl-Pr Geotab_Close ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab Get() API.
+//- authinfo = Geotab_Auth('':'':'');
+//- data = Geotab_Get(authinfo:'Rule');
 Dcl-Pr Geotab_Get Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
@@ -38,6 +47,36 @@ Dcl-Pr Geotab_Get Pointer ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab GetFeed() API
+//- toVersion = '';
+//- length = 1; //To get into the DOW loop
+//- 
+//- //We need to create a new search objec to pass a date in
+//- search = Geotab_NewObject();
+//- 
+//- //We create a date using the %CHAR function
+//- date = %date;
+//- Geotab_SetStr(search:'fromDate':%char(date:*iso));
+//- 
+//- //We keep calling GetFeed until we have no more data to fetch.
+//- Dow (length > 0);
+//-   Geotab_Close(data);
+//-   
+//-   data = Geotab_GetFeed(authinfo:'ExceptionEvent':500:toVersion:search);
+//-   //We store the next version to go from so we can stream the results
+//-   toVersion = Geotab_StringAt(data:'result.toVersion');
+//- 
+//-   //Amount of elements returned
+//-   length = Geotab_GetCount(data);
+//- 
+//-   If (length > 0);
+//-     Dsply ('Count: ' + %char(length) + '-' + %trimr(toVersion));
+//-     //Handle array of data here
+//-   Else;
+//-     Geotab_Close(data);
+//-     Leave;
+//-   Endif;
+//- Enddo;
+
 Dcl-Pr Geotab_GetFeed Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
@@ -55,6 +94,21 @@ Dcl-Pr Geotab_GetFeed Pointer ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab GetRoadMaxSpeeds() API
+//- dcl-s fromDate date;
+//- Dcl-S speed packed(8:3);
+//- 
+//- fromDate = %date - %days(1);
+//- data = Geotab_GetRoadMaxSpeeds(authinfo:'b8F0':%char(fromDate:*iso));
+//- 
+//- length = Geotab_GetCount(data);
+//- 
+//- For index = 1 to length;
+//-   currentElement = Geotab_ElementAt(data:index-1);
+//-   speed = Geotab_NumberAt(currentElement:'v');
+//- 
+//-   Dsply ('Speed: ' + %Char(speed));
+//- endfor;
+
 Dcl-Pr Geotab_GetRoadMaxSpeeds Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
