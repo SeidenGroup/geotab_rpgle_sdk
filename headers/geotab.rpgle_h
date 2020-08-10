@@ -1,123 +1,206 @@
 **FREE
 
+//@ Used to store the current token from Geotab.
 Dcl-S Geotab_Token Varchar(256) Template;
 
+//@ Used to determine if a call to the API was successful
 Dcl-Pr Geotab_Successful Ind ExtProc;
+  //@ Optionally the resulting JSON object
   pResult Pointer Options(*NoPass);
 End-Pr;
 
+//@ Used to authenticate to Geotab. Returns a JSON string which 
+//@ needs to be used in other procedures following the Auth. 
+//@ The token can be reused in many jobs.
 Dcl-Pr Geotab_Auth Like(Geotab_Token) ExtProc;
   pDatabase Pointer Value Options(*String);
   pUsername Pointer Value Options(*String);
   pPassword Pointer Value Options(*String);
 End-Pr;
 
+//@ Used to free memory allocated by the JSON parser/generator
 Dcl-Pr Geotab_Close ExtProc;
+  //@ The JSON pointer
   pJSON Pointer;
 End-Pr;
 
+//@ Makes a call to the Geotab Get() API.
 Dcl-Pr Geotab_Get Pointer ExtProc;
-  pSession Like(Geotab_Token);
+  //@ The token from Geotab_Auth
+  pSession     Like(Geotab_Token);
+  //@ The Entity type (from Geotab)
   pType    Pointer Value Options(*String);
+  //@ The max amount of elements returned
   pLimit   Int(5) Const Options(*NoPass);
+  //@ The search object, if any. 
+  //@ Object can be created with Geotab_NewObject().
   pSearch  Pointer Options(*NoPass);
 End-Pr;
 
+//@ Makes a call to the Geotab GetFeed() API
 Dcl-Pr Geotab_GetFeed Pointer ExtProc;
+  //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
+  //@ The Geotab Entity
   pType        Pointer Value Options(*String);
+  //@ The limit of items in the returned array
   pLimit       Int(5) Const Options(*NoPass);
+  //@ The from version to collect data in the next group.
+  //@ This API returns a toVersion, which can then be used
+  //@ in this From Version parameter.
   pFromVersion Pointer Value Options(*String:*NoPass);
+  //@ The search object, if any. 
+  //@ Object can be created with Geotab_NewObject().
   pSearch      Pointer Options(*NoPass);
 End-Pr;
 
+//@ Makes a call to the Geotab GetRoadMaxSpeeds() API
 Dcl-Pr Geotab_GetRoadMaxSpeeds Pointer ExtProc;
-  pSession  Like(Geotab_Token);
+  //@ The token from Geotab_Auth
+  pSession     Like(Geotab_Token);
+  //@ Optionally search for speeds for a specific device ID.
   pDeviceID Pointer Value Options(*String:*NoPass);
+  //@ An ISO format date. (%Char(datevar:*ISO))
   pFromDate Pointer Value Options(*String:*NoPass);
+  //@ An ISO format date. (%Char(datevar:*ISO))
   pToDate   Pointer Value Options(*String:*NoPass);
 End-Pr;
 
+//@ Makes a call to the Geotab GetAddresses() API
 Dcl-Pr Geotab_GetAddresses Pointer ExtProc;
+  //@ The token from Geotab_Auth
   pSession         Like(Geotab_Token);
+  //@ An array of coordinateds. Please see the GetAddresses API.
   pCoordinates     Pointer Value;
+  //@ Optional indicator.
   pHosAddresses    Ind Const Options(*NoPass);
+  //@ Optional indicator.
   pMovingAddresses Ind Const Options(*NoPass);
 End-Pr;
 
+//@ Makes a call to the Geotab Add() API
 Dcl-Pr Geotab_Add ExtProc;
-  pSession          Like(Geotab_Token);
+  //@ The token from Geotab_Auth
+  pSession     Like(Geotab_Token);
+  //@ The Geotab Entity
   pEntityType       Pointer Value Options(*String);
+  //@ The properties for the Entity to be added.
   pEntityProperties Pointer;
 End-Pr;
 
+//@ Makes a call to the Geotab Update() API
 Dcl-Pr Geotab_Update ExtProc;
-  pSession          Like(Geotab_Token);
+  //@ The token from Geotab_Auth
+  pSession     Like(Geotab_Token);
+  //@ The Geotab Entity
   pEntityType       Pointer Value Options(*String);
+  //@ The properties you want to update on selected Entity.
+  //@ Must provide an 'id' property for the update method.
   pEntityProperties Pointer;
 End-Pr;
 
+//@ Returns a new, empty, JSON object.
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;
 
+//@ Returns a new, empty, JSON array.
 Dcl-Pr Geotab_NewArray Pointer ExtProc;
 End-Pr;
 
+//@ Used to set a property in an object to an existing array.
 Dcl-Pr Geotab_SetArray ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property for the array.
   pProperty Pointer Value Options(*String);
+  //@ The JSOJ array for the property.
   pArray    Pointer;
 End-Pr;
 
+//@ Used to set a property in an object to an existing object.
 Dcl-Pr Geotab_SetObject ExtProc;
+  //@ Existing JSON object.
   pObject    Pointer;
+  //@ The name of the property for the array.
   pProperty  Pointer Value Options(*String);
+  //@ The JSON object for the property.
   pNewObject Pointer;
 End-Pr;
 
+//@ Used to push a JSON object/array to an array.
 Dcl-Pr Geotab_ArrayPush ExtProc;
+  //@ Existing JSON array.
   pArray Pointer;
+  //@ Object/array to push.
   pValue Pointer;
 End-Pr;
 
+//@ Used to push a string to an array
 Dcl-Pr Geotab_ArrayPushString ExtProc;
+  //@ Existing JSON array.
   pArray Pointer;
+  //@ String to push. Does not automatically trim.
   pValue Pointer Value Options(*String);
 End-Pr;
 
+//@ Used to set a property in an object to a string.
 Dcl-Pr Geotab_SetStr ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property for the value.
   pProperty Pointer Value Options(*String);
+  //@ The number value.
   pValue    Pointer Value Options(*String);
 End-Pr;
 
+//@ Used to set a property in an object to a number.
 Dcl-Pr Geotab_SetNum ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property for the value.
   pProperty Pointer Value Options(*String);
+  //@ The number value.
   pValue    Packed(30:15) Const;
 End-Pr;
 
+//@ Used to set a property in an object to a boolean.
 Dcl-Pr Geotab_SetBool ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property for the value.
   pProperty Pointer Value Options(*String);
+  //@ The indicator value.
   pValue    Ind Const;
 End-Pr;
 
+//@ Can be used after an API call to determine how
+//@ many elements were returned in the result.
 Dcl-Pr Geotab_GetCount Int(5) ExtProc;
+  //@ Resulting pointer.
   pGetResult Pointer;
 End-Pr;
 
+//@ Used to get the value at a certain index in an array.
+//@ Will return null if not found.
 Dcl-Pr Geotab_ElementAt Pointer ExtProc;
+  //@ Existing array.
   pArray Pointer;
+  //@ Index.
   pIndex Int(5) Const;
 End-Pr;
 
+//@ Used to get a string value of a property in an object.
 Dcl-Pr Geotab_StringAt Varchar(128) ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property in the object.
   pProperty Pointer Value Options(*String);
 End-Pr;
 
+//@ Used to get a number value of a property in an object.
 Dcl-Pr Geotab_NumberAt Packed(30:15) ExtProc;
+  //@ Existing JSON object.
   pObject   Pointer;
+  //@ The name of the property in the object.
   pProperty Pointer Value Options(*String);
 End-Pr;
