@@ -428,6 +428,17 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_GetObject Export;
+  Dcl-Pi Geotab_GetObject Pointer;
+    pObject    Pointer;
+    pProperty  Pointer Value Options(*String);
+  End-Pi;
+
+  Return JSON_Locate(pObject:pProperty);
+End-proc;
+
+//**************************************
+
 // This API should be used to get the length of
 // An array from the Geotab_Get API
 Dcl-Proc Geotab_GetCount Export;
@@ -467,6 +478,8 @@ Dcl-Proc Geotab_ElementAt Export;
       Return JSON_Locate(pObject:'result.data[' + %Char(pIndex) + ']');
     When (JSON_Has(pObject:'result'));
       Return JSON_Locate(pObject:'result[' + %Char(pIndex) + ']');
+    Other;
+      Return JSON_Locate(pObject:'[' + %Char(pIndex) + ']');
   Endsl;
 
   Return *Null;

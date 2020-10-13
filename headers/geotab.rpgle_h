@@ -181,6 +181,14 @@ Dcl-Pr Geotab_SetObject ExtProc;
   pNewObject Pointer;
 End-Pr;
 
+//@ Used to get a property (object or array) in an object.
+Dcl-Pr Geotab_GetObject Pointer ExtProc;
+  //@ Existing JSON object.
+  pObject    Pointer;
+  //@ The name of the property for the object/array.
+  pProperty  Pointer Value Options(*String);
+End-Pr;
+
 //@ Used to push a JSON object/array to an array.
 Dcl-Pr Geotab_ArrayPush ExtProc;
   //@ Existing JSON array.
