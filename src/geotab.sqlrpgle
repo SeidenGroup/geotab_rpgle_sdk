@@ -428,8 +428,8 @@ End-Proc;
 
 //**************************************
 
-Dcl-Proc Geotab_GetObject Export;
-  Dcl-Pi Geotab_GetObject Pointer;
+Dcl-Proc Geotab_ObjectAt Export;
+  Dcl-Pi Geotab_ObjectAt Pointer;
     pObject    Pointer;
     pProperty  Pointer Value Options(*String);
   End-Pi;
