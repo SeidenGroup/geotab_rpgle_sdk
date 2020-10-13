@@ -443,7 +443,13 @@ Dcl-Proc Geotab_GetCount Export;
       Array = JSON_Locate(pResult:'result.data');
     When (JSON_Has(pResult:'result'));
       Array = JSON_Locate(pResult:'result');
+    Other;
+      Array = pResult;
   Endsl;
+
+  If (Array = *NULL);
+    Array = pResult;
+  Endif;
 
   Return JSON_GetLength(Array);
 End-Proc;
