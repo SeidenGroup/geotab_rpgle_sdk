@@ -153,6 +153,11 @@ Dcl-Pr Geotab_Update ExtProc;
   pEntityProperties Pointer;
 End-Pr;
 
+Dcl-Pr Geotab_GetCoordinates Pointer ExtProc;
+  pSession          Like(Geotab_Token);
+  pAddressesArray   Pointer;
+End-Pr;
+
 //@ Returns a new, empty, JSON object.
 Dcl-Pr Geotab_NewObject Pointer ExtProc;
 End-Pr;

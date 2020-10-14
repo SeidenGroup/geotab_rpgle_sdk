@@ -304,6 +304,7 @@ Dcl-Proc Geotab_Add Export;
   JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
 
   json = Geotab_Call(json:pSession);
+  JSON_Close(json);
 
 End-Proc;
 
@@ -325,7 +326,28 @@ Dcl-Proc Geotab_Update Export;
   JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
 
   json = Geotab_Call(json:pSession);
+  JSON_Close(json);
 
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_GetCoordinates Export;
+  Dcl-Pi Geotab_GetCoordinates Pointer;
+    pSession          Like(Geotab_Token);
+    pAddressesArray   Pointer;
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'GetCoordinates');
+  JSON_SetValue(json:'params.addresses':pAddressesArray:JSON_ARRAY);
+
+  json = Geotab_Call(json:pSession);
+
+  return json;
 End-Proc;
 
 //**************************************
