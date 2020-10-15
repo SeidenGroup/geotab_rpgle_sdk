@@ -153,9 +153,62 @@ Dcl-Pr Geotab_Update ExtProc;
   pEntityProperties Pointer;
 End-Pr;
 
+//@ Makes a call to the Geotab Remove() API.
+//@ Used to delete an entity.
+Dcl-Pr Geotab_Remove ExtProc;
+  //@ The token from Geotab_Auth
+  pSession     Like(Geotab_Token);
+  //@ The Geotab Entity type
+  pEntityType       Pointer Value Options(*String);
+  //@ The ID of the entity you want to delete.
+  pEntityID         Pointer Value Options(*String);
+End-Pr;
+
+//@ Used to return a list of coordinates from addresses.
+
+//- Dcl-S waypointArray Pointer;
+//- waypointArray = Geotab_NewArray();
+//- Geotab_ArrayPush(waypointArray:
+//-   Geotab_NewWaypoint(5:10:'My waypoint':1)
+//- );
+//-
+//- coords = Geotab_GetCoordinates(token:waypointsArray);
+
 Dcl-Pr Geotab_GetCoordinates Pointer ExtProc;
+  //@ The token from Geotab_Auth
   pSession          Like(Geotab_Token);
+  //@ A string array (the list of addresses)
   pAddressesArray   Pointer;
+End-Pr;
+
+//@ Makes a call to the Geotab GetDirections API
+Dcl-Pr Geotab_GetDirections Pointer ExtProc;
+  //@ The token from Geotab_Auth
+  pSession          Like(Geotab_Token);
+  //@ An array of waypoints. Use `Geotab_NewWaypoint`
+  //@ for an easy way to create a way point.
+  pWaypointsArray   Pointer;
+End-Pr;
+
+//@ Makes a call to the Geotab OptimizeWaypoints API
+Dcl-Pr Geotab_OptimizeWaypoints Pointer ExtProc;
+  //@ The token from Geotab_Auth
+  pSession          Like(Geotab_Token);
+  //@ An array of waypoints. Use `Geotab_NewWaypoint`
+  //@ for an easy way to create a way point.
+  pWaypointsArray   Pointer;
+End-Pr;
+
+//@ Used as a way to simple create a waypoint object.
+Dcl-Pr Geotab_NewWaypoint Pointer ExtProc;
+  //@ X coordinate: `coordinate.x`
+  pCoordX      Packed(30:15) Const;
+  //@ Y coordinate: `coordinate.y`
+  pCoordY      Packed(30:15) Const;
+  //@ Waypoint description: `description`
+  pDescription Pointer Value Options(*String);
+  //@ Waypoint description: `sequence`
+  pSequence    Packed(30:15) Const;
 End-Pr;
 
 //@ Returns a new, empty, JSON object.

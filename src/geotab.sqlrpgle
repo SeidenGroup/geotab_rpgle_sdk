@@ -332,6 +332,28 @@ End-Proc;
 
 //**************************************
 
+Dcl-Proc Geotab_Remove Export;
+  Dcl-Pi Geotab_Remove;
+    pSession    Like(Geotab_Token);
+    pEntityType Pointer Value Options(*String);
+    pEntityID   Pointer Value Options(*String);
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'Set');
+  JSON_SetStr(json:'params.typeName':pEntityType);
+  JSON_SetStr(json:'params.entity.id':pEntityID);
+
+  json = Geotab_Call(json:pSession);
+  JSON_Close(json);
+
+End-Proc;
+
+//**************************************
+
 Dcl-Proc Geotab_GetCoordinates Export;
   Dcl-Pi Geotab_GetCoordinates Pointer;
     pSession          Like(Geotab_Token);
@@ -348,6 +370,68 @@ Dcl-Proc Geotab_GetCoordinates Export;
   json = Geotab_Call(json:pSession);
 
   return json;
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_GetDirections Export;
+  Dcl-Pi Geotab_GetDirections Pointer;
+    pSession          Like(Geotab_Token);
+    pWaypointsArray   Pointer;
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'GetDirections');
+  JSON_SetValue(json:'params.waypoints':pWaypointsArray:JSON_ARRAY);
+
+  json = Geotab_Call(json:pSession);
+
+  return json;
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_OptimizeWaypoints Export;
+  Dcl-Pi Geotab_OptimizeWaypoints Pointer;
+    pSession          Like(Geotab_Token);
+    pWaypointsArray   Pointer;
+  End-Pi;
+
+  Dcl-S json Pointer;
+
+  json = JSON_NewObject();
+
+  JSON_SetStr(json:'method':'OptimizeWaypoints');
+  JSON_SetValue(json:'params.waypoints':pWaypointsArray:JSON_ARRAY);
+
+  json = Geotab_Call(json:pSession);
+
+  return json;
+End-Proc;
+
+//**************************************
+
+Dcl-Proc Geotab_NewWaypoint Export;
+  Dcl-Pi Geotab_NewWaypoint Pointer;
+    pCoordX      Packed(30:15) Const;
+    pCoordY      Packed(30:15) Const;
+    pDescription Pointer Value Options(*String);
+    pSequence    Packed(30:15) Const;
+  End-Pi;
+
+  Dcl-S waypoint Pointer;
+
+  waypoint = JSON_NewObject();
+  
+  JSON_SetStr(waypoint:'description':pDescription);
+  JSON_SetNum(waypoint:'sequence':pSequence);
+  JSON_SetNum(waypoint:'coordinate.x':pCoordX);
+  JSON_SetNum(waypoint:'coordinate.y':pCoordY);
+
+  Return waypoint;
 End-Proc;
 
 //**************************************
