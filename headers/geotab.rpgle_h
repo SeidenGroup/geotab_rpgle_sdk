@@ -165,15 +165,6 @@ Dcl-Pr Geotab_Remove ExtProc;
 End-Pr;
 
 //@ Used to return a list of coordinates from addresses.
-
-//- Dcl-S waypointArray Pointer;
-//- waypointArray = Geotab_NewArray();
-//- Geotab_ArrayPush(waypointArray:
-//-   Geotab_NewWaypoint(5:10:'My waypoint':1)
-//- );
-//-
-//- coords = Geotab_GetCoordinates(token:waypointsArray);
-
 Dcl-Pr Geotab_GetCoordinates Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession          Like(Geotab_Token);
@@ -182,6 +173,14 @@ Dcl-Pr Geotab_GetCoordinates Pointer ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab GetDirections API
+//- Dcl-S waypointArray Pointer;
+//- waypointArray = Geotab_NewArray();
+//- Geotab_ArrayPush(waypointArray:
+//-   Geotab_NewWaypoint(5:10:'My waypoint':1)
+//- );
+//-
+//- directions = Geotab_GetDirections(token:waypointsArray);
+
 Dcl-Pr Geotab_GetDirections Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession          Like(Geotab_Token);
