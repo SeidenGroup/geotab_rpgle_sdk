@@ -289,7 +289,7 @@ End-Proc;
 //**************************************
 
 Dcl-Proc Geotab_Add Export;
-  Dcl-Pi Geotab_Add;
+  Dcl-Pi Geotab_Add Pointer;
     pSession          Like(Geotab_Token);
     pEntityType       Pointer Value Options(*String);
     pEntityProperties Pointer;
@@ -304,7 +304,8 @@ Dcl-Proc Geotab_Add Export;
   JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
 
   json = Geotab_Call(json:pSession);
-  JSON_Close(json);
+  
+  Return json;
 
 End-Proc;
 

@@ -133,7 +133,8 @@ Dcl-Pr Geotab_GetAddresses Pointer ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab Add() API
-Dcl-Pr Geotab_Add ExtProc;
+//@ Returns object which will contain entity ID.
+Dcl-Pr Geotab_Add Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
   //@ The Geotab Entity
