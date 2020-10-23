@@ -144,7 +144,7 @@ Dcl-Pr Geotab_Add Pointer ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab Update() API
-Dcl-Pr Geotab_Update ExtProc;
+Dcl-Pr Geotab_Update Pointer ExtProc;
   //@ The token from Geotab_Auth
   pSession     Like(Geotab_Token);
   //@ The Geotab Entity
