@@ -36,7 +36,11 @@ Dcl-Proc Geotab_Call;
                  :JSON_Locate(AuthJSON:'result.credentials')
                  :JSON_OBJECT);
   Else;
-    request.URL = 'https://my.geotab.com/apiv1';
+    If (JSON_Has(pBody:'initURL'));
+      request.URL = JSON_GetStr(pBody:'initURL');
+    Else;
+      request.URL = 'https://my.geotab.com/apiv1';
+    Endif;
   Endif;
 
   request.Header 
@@ -88,6 +92,7 @@ End-Proc;
 
 Dcl-Proc Geotab_Auth Export;
   Dcl-Pi Geotab_Auth Like(Geotab_Token);
+    pURL      Pointer Value Options(*String);
     pDatabase Pointer Value Options(*String);
     pUsername Pointer Value Options(*String);
     pPassword Pointer Value Options(*String);
@@ -98,6 +103,7 @@ Dcl-Proc Geotab_Auth Export;
 
   json = JSON_NewObject();
 
+  JSON_SetStr(json:'initURL':pURL);
   JSON_SetStr(json:'method':'Authenticate');
   JSON_SetStr(json:'params.database':pDatabase);
   JSON_SetStr(json:'params.userName':pUsername);

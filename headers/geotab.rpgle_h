@@ -4,7 +4,7 @@
 Dcl-S Geotab_Token Varchar(256) Template;
 
 //@ Used to determine if a call to the API was successful
-//- authinfo = Geotab_Auth('':'':'');
+//- authinfo = Geotab_Auth('':'':'':'');
 //- data = Geotab_Get(authinfo:'Rule');
 //-
 //- If (Geotab_Successful(data));
@@ -20,6 +20,8 @@ End-Pr;
 //@ needs to be used in other procedures following the Auth. 
 //@ The token can be reused in many jobs.
 Dcl-Pr Geotab_Auth Like(Geotab_Token) ExtProc;
+  //@ A URL is required. Use 'https://my.geotab.com/apiv1' as the default
+  pURL      Pointer Value Options(*String);
   pDatabase Pointer Value Options(*String);
   pUsername Pointer Value Options(*String);
   pPassword Pointer Value Options(*String);
@@ -32,7 +34,7 @@ Dcl-Pr Geotab_Close ExtProc;
 End-Pr;
 
 //@ Makes a call to the Geotab Get() API.
-//- authinfo = Geotab_Auth('':'':'');
+//- authinfo = Geotab_Auth('':'':'':'');
 //- data = Geotab_Get(authinfo:'Rule');
 Dcl-Pr Geotab_Get Pointer ExtProc;
   //@ The token from Geotab_Auth
