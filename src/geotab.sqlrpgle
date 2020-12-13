@@ -1,5 +1,5 @@
 **FREE
-//compile :CRTSQLRPGI_MOD
+//compile:CRTSQLRPGI_MOD
 
 ctl-opt nomain;
 ctl-opt debug(*yes);
@@ -20,7 +20,7 @@ Dcl-Proc Geotab_Call;
   Dcl-Ds request Qualified;
     URL    Varchar(64);
     Header Varchar(1024);
-    Body   Varchar(1024);
+    Body   Varchar(2048);
   End-Ds;
 
   Dcl-S AuthJSON Pointer;

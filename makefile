@@ -27,6 +27,7 @@ geotab.bnddir: geotab.entry jsonxml.entry
 	system -s "CPYFRMSTMF FROMSTMF('$<') TOMBR('/QSYS.LIB/$(LIB).LIB/QRPGLEREF.FILE/$*.MBR') MBROPT(*REPLACE)"
 
 %.package:
+	-system -s "DLTOBJ OBJ($(LIB)/PACKAGE) OBJTYPE(*FILE)"
 	system -s "CRTSAVF FILE($(LIB)/PACKAGE)"
 	system -s "SAV DEV('/QSYS.LIB/$(LIB).LIB/PACKAGE.FILE') OBJ(('/QSYS.LIB/$(LIB).LIB/$*.SRVPGM')) TGTRLS(V7R2M0)"
 

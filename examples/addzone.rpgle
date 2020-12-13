@@ -4,7 +4,7 @@ Ctl-Opt DFTACTGRP(*No) BNDDIR('GEOTAB');
 
 /copy ./headers/geotab.rpgle_h
 
-Dcl-S authinfo Pointer;
+Dcl-S authinfo varchar(256);
 Dcl-s data Pointer;
 dcl-s subObject pointer;
 dcl-s array pointer;
@@ -23,7 +23,7 @@ points(1).y = 43.438266;
 points(2).x = -79.711181;
 points(2).y = 43.437461;
 
-authinfo = Geotab_Auth('':'':'');
+authinfo = Geotab_Auth('':'':'':'');
 
 data = Geotab_NewObject();
 
