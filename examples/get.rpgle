@@ -25,7 +25,7 @@ authpointer = getenv('GEOTAB_TOKEN');
 If (authpointer <> *NULL);
   authinfo = %Str(authpointer);
 Else;
-  authinfo = Geotab_Auth('':'':'');
+  authinfo = Geotab_Auth('':'':'':'');
   putenv('GEOTAB_TOKEN=' + %TrimR(authinfo));
 Endif;
 
