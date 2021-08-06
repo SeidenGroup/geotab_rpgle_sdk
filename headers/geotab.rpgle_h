@@ -1,6 +1,5 @@
 **FREE
 
-//@ Used to store the current token from Geotab.
 Dcl-S Geotab_Token Varchar(256) Template;
 
 //@ Used to determine if a call to the API was successful
@@ -12,7 +11,7 @@ Dcl-S Geotab_Token Varchar(256) Template;
 //- Endif;
 
 Dcl-Pr Geotab_Successful Ind ExtProc;
-  //@ Optionally the resulting JSON object
+  //@ Optionally the resulting JSON object!!!
   pResult Pointer Options(*NoPass);
 End-Pr;
 

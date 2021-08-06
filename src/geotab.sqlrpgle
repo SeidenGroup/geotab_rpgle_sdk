@@ -11,9 +11,12 @@ ctl-opt debug(*yes);
 
 //**************************************
 
+//@ Used to call the Geotab API
 Dcl-Proc Geotab_Call;
   Dcl-Pi Geotab_Call Pointer;
+    //@ Pointer which comes from noxDB
     pBody Pointer;
+    //@ Optional auth token which comes from Geotab
     pToken Like(Geotab_Token) Options(*NoPass);
   End-Pi;
 
@@ -24,7 +27,7 @@ Dcl-Proc Geotab_Call;
   End-Ds;
 
   Dcl-S AuthJSON Pointer;
-  Dcl-S Response SQLTYPE(CLOB:262144);
+  Dcl-S Response SQLTYPE(CLOB:1000000);
 
   If (%Parms >= 2);
     AuthJSON = JSON_ParseString(pToken);

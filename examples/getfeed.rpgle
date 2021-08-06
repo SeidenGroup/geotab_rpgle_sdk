@@ -4,7 +4,7 @@ Ctl-Opt DFTACTGRP(*No) BNDDIR('GEOTAB');
 
 /copy ./headers/geotab.rpgle_h
 
-Dcl-S authinfo Pointer;
+Dcl-S authinfo Like(Geotab_Token);
 Dcl-s data Pointer;
 dcl-s search pointer;
 
@@ -18,7 +18,7 @@ Dcl-s date date;
 //**********************************
 
 //Authenticate to Geotab APIs. Must be called first
-authinfo = Geotab_Auth('':'':'');
+authinfo = Geotab_Auth('':'':'':'');
 
 toVersion = '';
 length = 1; //To get into the DOW loop
