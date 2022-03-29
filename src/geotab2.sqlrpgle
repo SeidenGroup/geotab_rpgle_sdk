@@ -219,22 +219,6 @@ End-Proc;
 
 //**************************************
 
-Dcl-Proc Geotab_UpdateX;
-  Dcl-Pi Geotab_UpdateX Pointer;
-    pSession Like(Geotab_Token);
-    pType    Pointer Value Options(*String);
-    pValue   Pointer Value Options(*String);
-  End-Pi;
-
-  Dcl-S lPointer Pointer;
-
-  // Do work here
-
-  Return lPointer;
-End-Proc;
-
-//**************************************
-
 Dcl-Proc Geotab_GetRoadMaxSpeeds Export;
   Dcl-Pi Geotab_GetRoadMaxSpeeds Pointer;
     pSession  Like(Geotab_Token);
@@ -302,7 +286,7 @@ Dcl-Proc Geotab_GetAddresses Export;
 
   json_SetStr(json:'method':'GetAddresses');
   json_SetValue(json:'params.coordinates':pCoordinates:json_ARRAY);
-  json_SetBool(json:'params.doesHaveAddresses':HosAddresses);
+  json_SetBool(json:'params.hosAddresses':HosAddresses);
   json_SetBool(json:'params.movingAddresses':MovingAddresses);
 
   json = Geotab_Call(json:pSession);

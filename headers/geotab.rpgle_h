@@ -94,12 +94,6 @@ Dcl-Pr Geotab_GetFeed Pointer ExtProc;
   pSearch      Pointer Options(*NoPass);
 End-Pr;
 
-Dcl-Pr Geotab_UpdateX Pointer ExtProc;
-  pSession Like(Geotab_Token);
-  pType    Pointer Value Options(*String);
-  pValue   Pointer Value Options(*String);
-End-Pr;
-
 //@ Makes a call to the Geotab GetRoadMaxSpeeds() API
 //- dcl-s fromDate date;
 //- Dcl-S speed packed(8:3);
