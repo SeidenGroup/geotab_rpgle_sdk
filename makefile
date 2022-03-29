@@ -5,6 +5,7 @@ TGTRLS=*CURRENT
 all: geotab.srvpgm geotab.bnddir
 
 geotab.srvpgm: geotab.sqlmod geotab.header
+geotab2.srvpgm: geotab2.sqlmod
 geotab.sqlmod: geotab.bnddir
 geotab.bnddir: geotab.entry jsonxml.entry
 
@@ -29,7 +30,7 @@ geotab.bnddir: geotab.entry jsonxml.entry
 %.package:
 	-system -s "DLTOBJ OBJ($(LIB)/PACKAGE) OBJTYPE(*FILE)"
 	system -s "CRTSAVF FILE($(LIB)/PACKAGE)"
-	system -s "SAV DEV('/QSYS.LIB/$(LIB).LIB/PACKAGE.FILE') OBJ(('/QSYS.LIB/$(LIB).LIB/$*.SRVPGM')) TGTRLS(V7R2M0)"
+	system -s "SAV DEV('/QSYS.LIB/$(LIB).LIB/PACKAGE.FILE') OBJ(('/QSYS.LIB/$(LIB).LIB/$*.SRVPGM')) TGTRLS($(TGTRLS))"
 
 	-mkdir pkgs
 	system -s "CPYTOSTMF FROMMBR('/QSYS.lib/$(LIB).lib/PACKAGE.FILE') TOSTMF('./pkgs/$*.pkg') STMFOPT(*REPLACE) STMFCCSID(1252) CVTDTA(*NONE)"

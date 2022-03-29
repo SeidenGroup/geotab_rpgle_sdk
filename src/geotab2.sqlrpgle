@@ -19,7 +19,7 @@ Dcl-Proc Geotab_Call;
     //@ Optional auth token which comes from Geotab
     pToken Like(Geotab_Token) Options(*NoPass);
   End-Pi;
-
+  
   Dcl-Ds request Qualified;
     URL    Varchar(64);
     Header Varchar(1024);
@@ -30,41 +30,40 @@ Dcl-Proc Geotab_Call;
   Dcl-S Response SQLTYPE(CLOB:1000000);
 
   If (%Parms >= 2);
-    AuthJSON = JSON_ParseString(pToken);
+    AuthJSON = json_ParseString(pToken);
     request.URL = 'https://'
-                + JSON_GetStr(AuthJSON:'result.path')
+                + json_GetStr(AuthJSON:'result.path')
                 + '/apiv1/';
-    JSON_SetValue(pBody
+    json_SetValue(pBody
                  :'params.credentials'
-                 :JSON_Locate(AuthJSON:'result.credentials')
-                 :JSON_OBJECT);
+                 :json_Locate(AuthJSON:'result.credentials')
+                 :json_OBJECT);
   Else;
-    If (JSON_Has(pBody:'initURL'));
-      request.URL = JSON_GetStr(pBody:'initURL');
+    If (json_Has(pBody:'initURL'));
+      request.URL = json_GetStr(pBody:'initURL');
     Else;
       request.URL = 'https://my.geotab.com/apiv1';
     Endif;
   Endif;
 
   request.Header 
-         = '<httpHeader>'
-         + '<header name="Content-Type" value="application/json" />'
-         + '<header name="Accept-Encoding" value="gzip, deflate" />'
-         + '</httpHeader>';
+        = '{'
+        + '"header": "Content-Type,application/json",'
+        + '}';
 
-  request.Body = JSON_AsText(pBody);
+  request.Body = json_AsText(pBody);
 
   EXEC SQL
     SET :Response = 
-    SYSTOOLS.HTTPPOSTCLOB(
+    QSYS2.HTTP_POST(
       :request.URL,
-      :request.Header,
-      :request.Body
+      :request.Body,
+      :request.Header
     );
 
-  JSON_Close(pBody);
+  json_Close(pBody);
 
-  Return JSON_ParseString(Response_Data);
+  Return json_ParseString(Response_Data);
 End-Proc;
 
 //**************************************
@@ -79,11 +78,11 @@ Dcl-Proc Geotab_Successful Export;
   Endif;
 
   If (%Parms >= 1);
-    If (JSON_Error(pResult));
+    If (json_Error(pResult));
       Return *Off;
     Endif;
 
-    If (JSON_Has(pResult:'error'));
+    If (json_Has(pResult:'error'));
       Return *Off;
     Endif;
   Endif;
@@ -104,18 +103,18 @@ Dcl-Proc Geotab_Auth Export;
   Dcl-S json Pointer;
   Dcl-S authData Like(Geotab_Token);
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'initURL':pURL);
-  JSON_SetStr(json:'method':'Authenticate');
-  JSON_SetStr(json:'params.database':pDatabase);
-  JSON_SetStr(json:'params.userName':pUsername);
-  JSON_SetStr(json:'params.password':pPassword);
+  json_SetStr(json:'initURL':pURL);
+  json_SetStr(json:'method':'Authenticate');
+  json_SetStr(json:'params.database':pDatabase);
+  json_SetStr(json:'params.userName':pUsername);
+  json_SetStr(json:'params.password':pPassword);
 
   json = Geotab_Call(json);
-  authData = JSON_AsText(json);
+  authData = json_AsText(json);
 
-  JSON_Close(json);
+  json_Close(json);
 
   Return authData;
 End-Proc;
@@ -127,7 +126,7 @@ Dcl-Proc Geotab_Close Export;
     pJSON Pointer;
   End-Pi;
 
-  JSON_Close(pJSON);
+  json_Close(pJSON);
 End-Proc;
 
 //**************************************
@@ -143,22 +142,22 @@ Dcl-Proc Geotab_Get Export;
   Dcl-S json Pointer;
   Dcl-S limit Like(pLimit) Inz(100);
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
   If (%Parms >= 3);
     limit = pLimit;
   Endif;
 
   If (%Parms >= 4);
-    JSON_SetValue(json
+    json_SetValue(json
                  :'params.search'
                  :pSearch
-                 :JSON_OBJECT);
+                 :json_OBJECT);
   Endif;
 
-  JSON_SetStr(json:'method':'Get');
-  JSON_SetStr(json:'params.typeName':pType);
-  JSON_SetNum(json:'params.resultsLimit':limit);
+  json_SetStr(json:'method':'Get');
+  json_SetStr(json:'params.typeName':pType);
+  json_SetNum(json:'params.resultsLimit':limit);
   
   json = Geotab_Call(json:pSession);
 
@@ -182,7 +181,7 @@ Dcl-Proc Geotab_GetFeed Export;
 
   Dcl-s message varchar(128);
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
   If (%Parms >= 3);
     limit = pLimit;
@@ -195,19 +194,19 @@ Dcl-Proc Geotab_GetFeed Export;
   Endif;
 
   If (%Parms >= 5);
-    JSON_SetValue(json
+    json_SetValue(json
                  :'params.search'
                  :pSearch
-                 :JSON_OBJECT);
+                 :json_OBJECT);
   Endif;
 
   If (fromversion <> *BLANK);
-    JSON_SetStr(json:'params.fromVersion':fromversion);
+    json_SetStr(json:'params.fromVersion':fromversion);
   Endif;
 
-  JSON_SetStr(json:'method':'GetFeed');
-  JSON_SetStr(json:'params.typeName':pType);
-  JSON_SetNum(json:'params.resultsLimit':limit);
+  json_SetStr(json:'method':'GetFeed');
+  json_SetStr(json:'params.typeName':pType);
+  json_SetNum(json:'params.resultsLimit':limit);
   
   json = Geotab_Call(json:pSession);
 
@@ -247,28 +246,28 @@ Dcl-Proc Geotab_GetRoadMaxSpeeds Export;
   Dcl-S json Pointer;
   Dcl-S string varchar(24);
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'GetRoadMaxSpeeds');
+  json_SetStr(json:'method':'GetRoadMaxSpeeds');
 
   If (%Parms >= 2);
     string = %Str(pDeviceID);
     If (string <> *BLANK);
-      JSON_SetStr(json:'params.deviceSearch.id':string);
+      json_SetStr(json:'params.deviceSearch.id':string);
     Endif;
   Endif;
 
   If (%Parms >= 3);
     string = %Str(pFromDate);
     If (string <> *BLANK);
-      JSON_SetStr(json:'params.fromDate':string);
+      json_SetStr(json:'params.fromDate':string);
     Endif;
   Endif;
 
   If (%Parms >= 4);
     string = %Str(pToDate);
     If (string <> *BLANK);
-      JSON_SetStr(json:'params.toDate':string);
+      json_SetStr(json:'params.toDate':string);
     Endif;
   Endif;
   
@@ -299,12 +298,12 @@ Dcl-Proc Geotab_GetAddresses Export;
     MovingAddresses = pMovingAddresses;
   Endif;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'GetAddresses');
-  JSON_SetValue(json:'params.coordinates':pCoordinates:JSON_ARRAY);
-  JSON_SetBool(json:'params.doesHaveAddresses':HosAddresses);
-  JSON_SetBool(json:'params.movingAddresses':MovingAddresses);
+  json_SetStr(json:'method':'GetAddresses');
+  json_SetValue(json:'params.coordinates':pCoordinates:json_ARRAY);
+  json_SetBool(json:'params.doesHaveAddresses':HosAddresses);
+  json_SetBool(json:'params.movingAddresses':MovingAddresses);
 
   json = Geotab_Call(json:pSession);
 
@@ -322,11 +321,11 @@ Dcl-Proc Geotab_Add Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'Add');
-  JSON_SetStr(json:'params.typeName':pEntityType);
-  JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
+  json_SetStr(json:'method':'Add');
+  json_SetStr(json:'params.typeName':pEntityType);
+  json_SetValue(json:'params.entity':pEntityProperties:json_OBJECT);
 
   json = Geotab_Call(json:pSession);
   
@@ -345,11 +344,11 @@ Dcl-Proc Geotab_Update Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'Set');
-  JSON_SetStr(json:'params.typeName':pEntityType);
-  JSON_SetValue(json:'params.entity':pEntityProperties:JSON_OBJECT);
+  json_SetStr(json:'method':'Set');
+  json_SetStr(json:'params.typeName':pEntityType);
+  json_SetValue(json:'params.entity':pEntityProperties:json_OBJECT);
 
   json = Geotab_Call(json:pSession);
 
@@ -368,14 +367,14 @@ Dcl-Proc Geotab_Remove Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'Set');
-  JSON_SetStr(json:'params.typeName':pEntityType);
-  JSON_SetStr(json:'params.entity.id':pEntityID);
+  json_SetStr(json:'method':'Set');
+  json_SetStr(json:'params.typeName':pEntityType);
+  json_SetStr(json:'params.entity.id':pEntityID);
 
   json = Geotab_Call(json:pSession);
-  JSON_Close(json);
+  json_Close(json);
 
 End-Proc;
 
@@ -389,10 +388,10 @@ Dcl-Proc Geotab_GetCoordinates Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'GetCoordinates');
-  JSON_SetValue(json:'params.addresses':pAddressesArray:JSON_ARRAY);
+  json_SetStr(json:'method':'GetCoordinates');
+  json_SetValue(json:'params.addresses':pAddressesArray:json_ARRAY);
 
   json = Geotab_Call(json:pSession);
 
@@ -409,10 +408,10 @@ Dcl-Proc Geotab_GetDirections Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'GetDirections');
-  JSON_SetValue(json:'params.waypoints':pWaypointsArray:JSON_ARRAY);
+  json_SetStr(json:'method':'GetDirections');
+  json_SetValue(json:'params.waypoints':pWaypointsArray:json_ARRAY);
 
   json = Geotab_Call(json:pSession);
 
@@ -429,10 +428,10 @@ Dcl-Proc Geotab_OptimizeWaypoints Export;
 
   Dcl-S json Pointer;
 
-  json = JSON_NewObject();
+  json = json_NewObject();
 
-  JSON_SetStr(json:'method':'OptimizeWaypoints');
-  JSON_SetValue(json:'params.waypoints':pWaypointsArray:JSON_ARRAY);
+  json_SetStr(json:'method':'OptimizeWaypoints');
+  json_SetValue(json:'params.waypoints':pWaypointsArray:json_ARRAY);
 
   json = Geotab_Call(json:pSession);
 
@@ -451,12 +450,12 @@ Dcl-Proc Geotab_NewWaypoint Export;
 
   Dcl-S waypoint Pointer;
 
-  waypoint = JSON_NewObject();
+  waypoint = json_NewObject();
   
-  JSON_SetStr(waypoint:'description':pDescription);
-  JSON_SetNum(waypoint:'sequence':pSequence);
-  JSON_SetNum(waypoint:'coordinate.x':pCoordX);
-  JSON_SetNum(waypoint:'coordinate.y':pCoordY);
+  json_SetStr(waypoint:'description':pDescription);
+  json_SetNum(waypoint:'sequence':pSequence);
+  json_SetNum(waypoint:'coordinate.x':pCoordX);
+  json_SetNum(waypoint:'coordinate.y':pCoordY);
 
   Return waypoint;
 End-Proc;
@@ -466,7 +465,7 @@ End-Proc;
 Dcl-Proc Geotab_NewObject Export;
   Dcl-Pi Geotab_NewObject Pointer End-Pi;
 
-  Return JSON_NewObject();
+  Return json_NewObject();
 End-Proc;
 
 //**************************************
@@ -474,7 +473,7 @@ End-Proc;
 Dcl-Proc Geotab_NewArray Export;
   Dcl-Pi Geotab_NewArray Pointer End-Pi;
 
-  Return JSON_NewArray();
+  Return json_NewArray();
 End-Proc;
 
 //**************************************
@@ -485,7 +484,7 @@ Dcl-Proc Geotab_ArrayPush Export;
     pValue Pointer;
   End-Pi;
 
-  JSON_ArrayPush(pArray:pValue);
+  json_ArrayPush(pArray:pValue);
 End-Proc;
 
 //**************************************
@@ -496,7 +495,7 @@ Dcl-Proc Geotab_ArrayPushString Export;
     pValue Pointer Value Options(*String);
   End-Pi;
 
-  JSON_ArrayPush(pArray:pValue);
+  json_ArrayPush(pArray:pValue);
 End-Proc;
 
 //**************************************
@@ -508,7 +507,7 @@ Dcl-Proc Geotab_SetStr Export;
     pValue    Pointer Value Options(*String);
   End-Pi;
 
-  JSON_SetStr(pObject:pProperty:pValue);
+  json_SetStr(pObject:pProperty:pValue);
 End-Proc;
 
 //**************************************
@@ -520,7 +519,7 @@ Dcl-Proc Geotab_SetNum Export;
     pValue    Packed(30:15) Const;
   End-Pi;
 
-  JSON_SetNum(pObject:pProperty:pValue);
+  json_SetNum(pObject:pProperty:pValue);
 End-Proc;
 
 //**************************************
@@ -532,7 +531,7 @@ Dcl-Proc Geotab_SetBool Export;
     pValue    Ind Const;
   End-Pi;
 
-  JSON_SetBool(pObject:pProperty:pValue);
+  json_SetBool(pObject:pProperty:pValue);
 End-Proc;
 
 //**************************************
@@ -544,7 +543,7 @@ Dcl-Proc Geotab_SetArray Export;
     pArray    Pointer;
   End-Pi;
 
-  JSON_SetValue(pObject:pProperty:pArray:JSON_ARRAY);
+  json_SetValue(pObject:pProperty:pArray:json_ARRAY);
 End-Proc;
 
 //**************************************
@@ -556,7 +555,7 @@ Dcl-Proc Geotab_SetObject Export;
     pNewObject Pointer;
   End-Pi;
 
-  JSON_SetValue(pObject:pProperty:pNewObject:JSON_OBJECT);
+  json_SetValue(pObject:pProperty:pNewObject:json_OBJECT);
 End-Proc;
 
 //**************************************
@@ -567,7 +566,7 @@ Dcl-Proc Geotab_ObjectAt Export;
     pProperty  Pointer Value Options(*String);
   End-Pi;
 
-  Return JSON_Locate(pObject:pProperty);
+  Return json_Locate(pObject:pProperty);
 End-proc;
 
 //**************************************
@@ -582,11 +581,11 @@ Dcl-Proc Geotab_GetCount Export;
   Dcl-S Array Pointer;
 
   Select;
-    When (JSON_Has(pResult:'result.data'));
+    When (json_Has(pResult:'result.data'));
       //Usually indicates GetFeed
-      Array = JSON_Locate(pResult:'result.data');
-    When (JSON_Has(pResult:'result'));
-      Array = JSON_Locate(pResult:'result');
+      Array = json_Locate(pResult:'result.data');
+    When (json_Has(pResult:'result'));
+      Array = json_Locate(pResult:'result');
     Other;
       Array = pResult;
   Endsl;
@@ -595,7 +594,7 @@ Dcl-Proc Geotab_GetCount Export;
     Array = pResult;
   Endif;
 
-  Return JSON_GetLength(Array);
+  Return json_GetLength(Array);
 End-Proc;
 
 //**************************************
@@ -607,12 +606,12 @@ Dcl-Proc Geotab_ElementAt Export;
   End-Pi;
 
   Select;
-    When (JSON_Has(pObject:'result.data'));
-      Return JSON_Locate(pObject:'result.data[' + %Char(pIndex) + ']');
-    When (JSON_Has(pObject:'result'));
-      Return JSON_Locate(pObject:'result[' + %Char(pIndex) + ']');
+    When (json_Has(pObject:'result.data'));
+      Return json_Locate(pObject:'result.data[' + %Char(pIndex) + ']');
+    When (json_Has(pObject:'result'));
+      Return json_Locate(pObject:'result[' + %Char(pIndex) + ']');
     Other;
-      Return JSON_Locate(pObject:'[' + %Char(pIndex) + ']');
+      Return json_Locate(pObject:'[' + %Char(pIndex) + ']');
   Endsl;
 
   Return *Null;
@@ -627,7 +626,7 @@ Dcl-Proc Geotab_StringAt Export;
     pProperty Pointer Value Options(*String);
   End-Pi;
 
-  Return JSON_GetStr(pObject:pProperty);
+  Return json_GetStr(pObject:pProperty);
 End-Proc;
 
 //**************************************
@@ -638,7 +637,7 @@ Dcl-Proc Geotab_NumberAt Export;
     pProperty Pointer Value Options(*String);
   End-Pi;
 
-  Return JSON_GetNum(pObject:pProperty);
+  Return json_GetNum(pObject:pProperty);
 End-Proc;
 
 //**************************************
